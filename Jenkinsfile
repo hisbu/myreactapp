@@ -42,7 +42,7 @@ pipeline {
     stage('push image'){
       steps{
         script{
-          docker.witRegistry('https://registry.hub.docker.com', 'dockerhub-hisbu'){
+          docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-hisbu'){
             app.push("${DOCKER_TAG}")
           }
         }
