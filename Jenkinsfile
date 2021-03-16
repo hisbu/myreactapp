@@ -44,7 +44,23 @@ pipeline {
         script{
           docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-hisbu'){
             app.push("${DOCKER_TAG}")
+            app.push("latest")
           }
+        }
+      }
+    }
+    stage('cleanup images'){
+      steps{
+        sh 'docker rmi hisbu/myreactapp'
+      }
+    }
+
+    stage('deploy app'){
+      steps{
+        sh "chmod +x changeTag.sh"
+        sh "./changeTag.sh ${DOCKER_TAG}"
+        withKubeConfig([credentialsId: 'kubecconfig-clusterjcde', serverURL: 'https://34.101.217.228']){
+          sh 'kubectl apply -f deployment-config.k8s.yaml'
         }
       }
     }
